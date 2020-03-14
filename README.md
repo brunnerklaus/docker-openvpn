@@ -7,6 +7,42 @@
 [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fkylemanna%2Fdocker-openvpn.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fkylemanna%2Fdocker-openvpn?ref=badge_shield)
 
 
+
+# Usage
+## docker-compose
+Replace x.x.x.x with your local DNS server
+```bash
+docker-compose run --rm openvpn ovpn_genconfig -u udp://vpn.example.com -n "x.x.x.x 1.1.1.1 8.8.8.8"
+docker-compose run --rm openvpn ovpn_initpki
+docker-compose up -d openvpn
+docker-compose logs -f
+```
+
+## Generate a client certificate
+```bash
+export CLIENTNAME="User"
+### with a passphrase (recommended)
+docker-compose run --rm openvpn easyrsa build-client-full $CLIENTNAME
+
+### without a passphrase (not recommended)
+docker-compose run --rm openvpn easyrsa build-client-full $CLIENTNAME nopass
+```
+
+## Retrieve the client configuration with embedded certificates
+```bash
+docker-compose run --rm openvpn ovpn_getclient $CLIENTNAME > $CLIENTNAME.ovpn
+```
+
+## Revoke a client certificate
+```bash
+### Keep the corresponding crt, key and req files.
+docker-compose run --rm openvpn ovpn_revokeclient $CLIENTNAME
+### Remove the corresponding crt, key and req files.
+docker-compose run --rm openvpn ovpn_revokeclient $CLIENTNAME remove
+```
+
+-----
+
 OpenVPN server in a Docker container complete with an EasyRSA PKI CA.
 
 Extensively tested on [Digital Ocean $5/mo node](http://bit.ly/1C7cKr3) and has

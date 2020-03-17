@@ -5,12 +5,13 @@ services:
       context: ./
       dockerfile: Dockerfile
     container_name: openvpn
+    image: openvpn:latest
     cap_add:
      - NET_ADMIN
     ports:
      - "1194:1194/udp"
-    restart: always
     environment:
       - EASYRSA_KEY_SIZE=4096
     volumes:
       - ./openvpn-data/conf:/etc/openvpn
+    restart: always
